@@ -1,6 +1,10 @@
 <?php
 $title = $i18n->t('login');
 $no_layout = true;
+
+// Optional Q-number (e.g. /login?q=1234567890) to support redirect back to /q/{number}
+$qParam = $_GET['q'] ?? '';
+$qNumber = preg_replace('/\D/', '', (string)$qParam);
 ?>
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
@@ -40,6 +44,8 @@ $no_layout = true;
         const BASE_URL = '<?= BASE_URL ?? '/' ?>';
         const csrfToken = '<?= $_SESSION['csrf_token'] ?? '' ?>';
         const invitationCode = '<?= htmlspecialchars($invitation_code ?? '', ENT_QUOTES, 'UTF-8') ?>';
+        const qNumber = '<?= htmlspecialchars($qNumber, ENT_QUOTES, 'UTF-8') ?>';
+        const nextUrl = qNumber ? ('/q/' + qNumber) : '';
     </script>
     <script src="/public/assets/js/main.js"></script>
     <script src="/public/assets/js/auth.js"></script>

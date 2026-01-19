@@ -29,6 +29,8 @@ $no_layout = true;
     <script>
         const BASE_URL = '<?= BASE_URL ?? '/' ?>';
         const csrfToken = '<?= $_SESSION['csrf_token'] ?? '' ?>';
+        const qNumber = '<?= htmlspecialchars(preg_replace("/\D/", "", (string)($_GET["q"] ?? "")), ENT_QUOTES, "UTF-8") ?>';
+        const nextUrl = qNumber ? ('/q/' + qNumber) : '';
     </script>
     <script src="/public/assets/js/main.js"></script>
     <script src="/public/assets/js/auth.js"></script>

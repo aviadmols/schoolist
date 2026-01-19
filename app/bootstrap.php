@@ -53,7 +53,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // 6. Configuration Loading
 try {
-    // A. Priority: Environment Variables (e.g., Railway)
+    // A. Priority: Environment Variables for DATABASE ONLY (e.g., Railway)
     $envVars = [
         'DB_HOST' => 'MYSQLHOST',
         'DB_NAME' => 'MYSQLDATABASE',
@@ -66,10 +66,9 @@ try {
         if ($val = getenv($env)) safe_define($const, $val);
     }
 
-    // B. SMTP, SMS & Other Keys
+    // B. SMTP & Other Keys (without SMS – SMS comes from config files first)
     $settingsVars = [
         'ADMIN_EMAIL', 'ADMIN_PHONE', 'ADMIN_MASTER_CODE', 
-        'SMS_019_TOKEN', 'SMS_SOURCE', 'SMS_USERNAME',
         'SMTP_ENABLED', 'SMTP_HOST', 'SMTP_PORT', 'SMTP_USER', 'SMTP_PASS', 
         'OPENAI_API_KEY'
     ];
@@ -81,14 +80,21 @@ try {
         }
     }
 
-    // C. Config Files Fallback
+    // C. Config Files Fallback (local/prod PHP config – includes SMS settings)
     $configLocal = CONFIG_PATH . '/config.local.php';
     if (file_exists($configLocal)) require_once $configLocal;
     
     $configProd = CONFIG_PATH . '/config.php';
     if (file_exists($configProd)) require_once $configProd;
 
-    // D. Global Defaults
+    // D. Optional: override SMS settings from environment ONLY if not already defined in config
+    foreach (['SMS_019_TOKEN', 'SMS_SOURCE', 'SMS_USERNAME'] as $var) {
+        if (!defined($var) && ($val = getenv($var)) !== false) {
+            safe_define($var, $val);
+        }
+    }
+
+    // E. Global Defaults
     safe_define('BASE_URL', '/');
     safe_define('SMTP_ENABLED', false);
     safe_define('SMTP_PORT', 587);

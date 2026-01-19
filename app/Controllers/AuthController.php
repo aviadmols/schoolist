@@ -61,6 +61,7 @@ class AuthController extends BaseController
         try {
             $data = $this->request->json();
             $identifier = trim($data['email'] ?? $data['identifier'] ?? '');
+            $qNumber = trim((string)($data['q'] ?? ''));
 
             if (empty($identifier)) {
                 $this->response->json([
@@ -85,11 +86,15 @@ class AuthController extends BaseController
             $result = $auth->requestOtp($identifier, $this->request->ip());
             
             if ($result['ok']) {
+                $redirect = '/verify?email=' . urlencode($identifier);
+                if ($qNumber !== '') {
+                    $redirect .= '&q=' . urlencode($qNumber);
+                }
                 $this->response->json([
                     'ok' => true,
                     'requires_otp' => true,
                     'message_he' => $result['message_he'],
-                    'redirect' => '/verify?email=' . urlencode($identifier)
+                    'redirect' => $redirect
                 ], 200);
             } else {
                 $this->response->json($result, 400);

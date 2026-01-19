@@ -106,11 +106,21 @@ class SmsService
 
         try {
             $jsonPayload = json_encode($payload, JSON_UNESCAPED_UNICODE);
-            
+
+            // Debug log: full request structure (headers + body) WITHOUT לחשוף את הטוקן המלא
+            $maskedToken = substr($this->token, 0, 6) . '***';
+            $headers = [
+                'Content-Type: application/json',
+                'Authorization: Bearer ' . $maskedToken,
+            ];
+
             Logger::info("SmsService::send: Requesting 019 API with nested structure", [
                 'to' => $to,
                 'username' => $username,
-                'url' => self::API_URL
+                'url' => self::API_URL,
+                'headers' => $headers,
+                'payload' => $payload,
+                'json_payload' => $jsonPayload,
             ]);
 
             $ch = curl_init();

@@ -60,7 +60,12 @@ function initLoginFormHandler(form) {
  * Sends a request to generate and send an OTP code.
  */
 async function requestNewOtp(identifier, messageBox) {
-    const response = await API.post('/api/auth/request-otp', { email: identifier });
+    const payload = { email: identifier };
+    // If we arrived via /login?q=..., pass the Q-number so that /verify יקבל אותה ויחזיר אותנו ל-/q/{number}
+    if (typeof qNumber !== 'undefined' && qNumber) {
+        payload.q = qNumber;
+    }
+    const response = await API.post('/api/auth/request-otp', payload);
     if (response.ok) {
         showMessage(messageBox, response.message_he, 'success');
         if (response.redirect) {
@@ -113,8 +118,15 @@ function initVerifyFormHandler(form) {
                 
                 showMessage(messageBox, 'התחברת בהצלחה!', 'success');
                 
-                // Redirect to relevant panel based on user role
-                const targetUrl = response.redirect || (response.user.role === 'system_admin' ? '/admin' : '/dashboard');
+                // Redirect:
+                // 1) אם השרת מחזיר redirect (למשל /redeem) – נלך לשם
+                // 2) אחרת, אם יש nextUrl גלובלי (למשל חזרנו מ-/q/NUMBER) – נשתמש בו
+                // 3) אחרת, נבחר ברירת מחדל לפי תפקיד
+                let defaultUrl = '/dashboard';
+                if (response.user && response.user.role === 'system_admin') {
+                    defaultUrl = '/admin';
+                }
+                const targetUrl = response.redirect || (typeof nextUrl !== 'undefined' && nextUrl ? nextUrl : defaultUrl);
                 setTimeout(() => window.location.href = targetUrl, 1000);
             }
         } catch (error) {

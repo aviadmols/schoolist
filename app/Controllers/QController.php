@@ -24,9 +24,37 @@ class QController extends BaseController
     public function handle(array $params): void
     {
         $number = (int)($params['number'] ?? 0);
-        
+
         if (!$this->db) {
             $this->response->view(self::VIEW_ERROR, ['message' => 'Database not available']);
+            return;
+        }
+
+        // If user is not authenticated, redirect to login with this Q-number,
+        // so that after הזדהות ב-SMS נחזור לקישור /q/{number}
+        $user = $this->container->get('user') ?? null;
+        if (!$user) {
+            // Try to auto-detect user from token/session (same as PublicController)
+            try {
+                $userRepo = new \App\Repositories\UserRepository($this->db);
+                $otpRepo = new \App\Repositories\OtpRepository($this->db);
+                $tokenRepo = new \App\Repositories\AuthTokenRepository($this->db);
+                $emailService = $this->container->get(\App\Services\EmailService::class);
+                $smsService = $this->container->get(\App\Services\SmsService::class);
+                $rateLimiter = $this->container->get(\App\Services\RateLimiter::class);
+                $auth = new \App\Services\Auth($userRepo, $otpRepo, $tokenRepo, $emailService, $smsService, $rateLimiter);
+                $user = $auth->getUser();
+
+                if ($user) {
+                    $this->container->set('user', $user);
+                }
+            } catch (\Throwable $e) {
+                Logger::error('QController::handle auth detection failed', ['msg' => $e->getMessage()]);
+            }
+        }
+
+        if (!$user) {
+            $this->response->redirect('/login?q=' . $number);
             return;
         }
 
