@@ -20,7 +20,7 @@ $no_layout = true;
         <?php endif; ?>
         <form id="loginForm" class="auth-form">
             <div class="form-group">
-                asdas
+         
                 <label for="email"><?= htmlspecialchars($i18n->t('email'), ENT_QUOTES, 'UTF-8') ?></label>
                 <input type="text" id="email" name="email" required placeholder="<?= htmlspecialchars($i18n->t('enter_email'), ENT_QUOTES, 'UTF-8') ?>" value="<?= htmlspecialchars($email ?? '', ENT_QUOTES, 'UTF-8') ?>">
             </div>
