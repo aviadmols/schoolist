@@ -1,0 +1,56 @@
+# Configuration files with sensitive data
+config/config.local.php
+config/config.php
+
+# Logs
+logs/*.log
+*.log
+
+# Uploads (optional - you may want to track these)
+# public/uploads/*
+# Ignore uploaded files but keep directory structure
+/public/uploads/page_*/
+/public/uploads/general/
+!/public/uploads/.gitkeep
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Temporary files
+*.tmp
+*.temp
+
+# Cache
+storage/ratelimit/*.json
+
+# Environment files
+.env
+.env.local
+
+# Setup lock file (prevent re-installation)
+setup.lock
+
+# Backup files
+*.sql
+!database/*.sql
+*.bak
+*.backup
+
+# Composer
+/vendor/
+
+# Node modules (if any)
+node_modules/
+
+# Build files
+/dist/
+/build/

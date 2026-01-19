@@ -1,0 +1,47 @@
+<?php
+declare(strict_types=1);
+
+/**
+ * Local Development Configuration Example
+ * Copy this file to config.local.php and fill in your database credentials
+ * 
+ * IMPORTANT: config.local.php is in .gitignore to avoid committing credentials
+ */
+
+// Database connection to remote server
+define('DB_HOST', 'your-server-host.com'); // Replace with your server's hostname or IP
+define('DB_NAME', 'your_database_name');    // Replace with your database name
+define('DB_USER', 'your_database_user');    // Replace with your database username
+define('DB_PASS', 'your_database_password'); // Replace with your database password
+define('DB_PREFIX', 'sl_');                 // Your table prefix (usually 'sl_')
+
+// Base URL for local development
+define('BASE_URL', 'http://localhost:8000/'); // Adjust port if needed
+
+// SMTP settings (optional - for email functionality)
+define('SMTP_ENABLED', false);
+// define('SMTP_HOST', 'smtp.example.com');
+// define('SMTP_PORT', 587);
+// define('SMTP_USER', 'your_smtp_user');
+// define('SMTP_PASS', 'your_smtp_password');
+// define('SMTP_FROM', 'noreply@schoolist.co.il');
+// define('SMTP_FROM_NAME', 'Schoolist');
+
+// OpenAI API (optional)
+// define('OPENAI_API_KEY', 'sk-...');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

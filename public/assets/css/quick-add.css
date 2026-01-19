@@ -1,0 +1,271 @@
+/* Quick Add Modal Styles */
+
+/* Modal Content */
+.modal-content-large {
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Ensure modal body allows scrolling */
+#quickAddModal .modal-body {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+/* Textarea */
+#quickAddText {
+    width: 100%;
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 1rem;
+    resize: vertical;
+    direction: rtl;
+    text-align: right;
+}
+
+/* File Upload */
+.quick-add-file-upload-label {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+#quickAddImage {
+    display: none;
+}
+
+.quick-add-upload-btn {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+}
+
+/* Image Preview */
+#quickAddImagePreview {
+    margin-top: 1rem;
+    display: none;
+}
+
+#quickAddImagePreviewImg {
+    max-width: 100%;
+    max-height: 200px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+.quick-add-remove-image-btn {
+    margin-top: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.quick-add-remove-image-btn:hover {
+    background: #c82333;
+}
+
+/* Message */
+#quickAddMessage {
+    margin-top: 1rem;
+}
+
+/* Form Actions */
+.quick-add-form-actions {
+    margin-top: 1.5rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+}
+
+/* Suggestions Section */
+#quickAddSuggestions {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid #ddd;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.quick-add-suggestions-title {
+    margin-bottom: 1rem;
+    color: #0C4A6E;
+}
+
+#quickAddSuggestionsList {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding-right: 0.5rem;
+}
+
+/* Suggestion Card */
+.quick-add-suggestion-card {
+    padding: 1rem;
+    border: 2px solid #0C4A6E;
+    border-radius: 8px;
+    background: #f9f9f9;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.quick-add-suggestion-card:hover {
+    background: #f0f0f0;
+    border-color: #0a3a56;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.quick-add-suggestion-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.quick-add-suggestion-info {
+    flex: 1;
+}
+
+.quick-add-suggestion-type {
+    color: #0C4A6E;
+    font-size: 1.1em;
+    font-weight: bold;
+}
+
+.quick-add-suggestion-reason {
+    margin-top: 0.5rem;
+    color: #666;
+    font-size: 0.9em;
+}
+
+.quick-add-suggestion-btn {
+    padding: 0.5rem 1rem;
+}
+
+/* Modal Display States */
+.quick-add-modal-hidden {
+    display: none;
+}
+
+.quick-add-modal-visible {
+    display: flex;
+}
+
+.quick-add-preview-hidden {
+    display: none;
+}
+
+.quick-add-preview-visible {
+    display: block !important;
+}
+
+/* Attached Image in Content */
+.quick-add-attached-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin: 1rem 0;
+}
+
+/* Preview Section */
+#quickAddPreview {
+
+}
+
+.quick-add-preview-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.quick-add-preview-header {
+    border-bottom: 2px solid #0C4A6E;
+    padding-bottom: 0.75rem;
+}
+
+.quick-add-preview-type {
+    margin: 0;
+    color: #0C4A6E;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.quick-add-preview-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.quick-add-preview-title {
+    font-size: 1.1em;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.quick-add-preview-content-text {
+    color: #555;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.quick-add-preview-image {
+    margin-top: 1rem;
+}
+
+.quick-add-preview-image img {
+    max-width: 100%;
+    max-height: 300px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+.quick-add-preview-date {
+    padding-top: 0.75rem;
+    border-top: 1px solid #ddd;
+    color: #666;
+    font-size: 0.9em;
+}
+
+.quick-add-preview-actions {
+    flex-flow: column-reverse;
+    display: flex;
+    gap: 1rem;
+}
+
+/* Ensure modal body can scroll and buttons stay visible */
+#quickAddModal .modal-body {
+    display: flex;
+    flex-direction: column;
+    max-height: calc(90vh - 120px);
+    overflow-y: auto;
+}
+
+#quickAddModal .modal-body #quickAddPreview {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+#quickAddModal .modal-body #quickAddPreview .quick-add-preview-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+#quickAddModal .modal-body #quickAddPreview .quick-add-preview-body {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+}

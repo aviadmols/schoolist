@@ -1,0 +1,11 @@
+{
+    "name": "aviadmols/schoolist",
+    "description": "Schoolist App",
+    "require": {
+        "php": ">=8.2",
+        "ext-pdo_mysql": "*",
+        "ext-curl": "*",
+        "ext-mbstring": "*",
+        "ext-json": "*"
+    }
+}
