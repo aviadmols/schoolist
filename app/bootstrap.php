@@ -81,16 +81,33 @@ try {
     }
 
     // C. Config Files Fallback (local/prod PHP config – includes SMS settings)
+    // IMPORTANT: SMS settings MUST come from config files, NOT from admin panel updates
     $configLocal = CONFIG_PATH . '/config.local.php';
-    if (file_exists($configLocal)) require_once $configLocal;
+    if (file_exists($configLocal)) {
+        require_once $configLocal;
+        // Log what SMS values were loaded from config.local.php
+        if (defined('SMS_019_TOKEN') || defined('SMS_SOURCE') || defined('SMS_USERNAME')) {
+            error_log("Bootstrap: SMS settings loaded from config.local.php - Token: " . 
+                (defined('SMS_019_TOKEN') ? substr(SMS_019_TOKEN, 0, 10) . '...' : 'NOT_SET') . 
+                ", Source: " . (defined('SMS_SOURCE') ? SMS_SOURCE : 'NOT_SET') . 
+                ", Username: " . (defined('SMS_USERNAME') ? SMS_USERNAME : 'NOT_SET'));
+        }
+    }
     
     $configProd = CONFIG_PATH . '/config.php';
-    if (file_exists($configProd)) require_once $configProd;
+    if (file_exists($configProd)) {
+        require_once $configProd;
+        // Log if SMS values came from config.php instead
+        if (defined('SMS_019_TOKEN') || defined('SMS_SOURCE') || defined('SMS_USERNAME')) {
+            error_log("Bootstrap: SMS settings loaded from config.php");
+        }
+    }
 
     // D. Optional: override SMS settings from environment ONLY if not already defined in config
     foreach (['SMS_019_TOKEN', 'SMS_SOURCE', 'SMS_USERNAME'] as $var) {
         if (!defined($var) && ($val = getenv($var)) !== false) {
             safe_define($var, $val);
+            error_log("Bootstrap: SMS setting $var loaded from ENV (fallback)");
         }
     }
 

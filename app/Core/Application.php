@@ -109,11 +109,13 @@ class Application
         // --- Authentication Routes ---
         $this->router->get('/login', 'AuthController@showLogin');
         $this->router->get('/login/{code}', 'AuthController@loginWithCode');
+        $this->router->get('/admin/master-login', 'AuthController@showAdminMasterLogin');
         $this->router->post('/api/auth/request-otp', 'AuthController@requestOtp');
         $this->router->post('/api/auth/login-with-code', 'AuthController@loginWithCodePost');
         $this->router->post('/api/auth/register-with-code', 'AuthController@registerWithCode');
         $this->router->get('/verify', 'AuthController@showVerify');
         $this->router->post('/api/auth/verify-otp', 'AuthController@verifyOtp');
+        $this->router->post('/api/auth/admin-master-login', 'AuthController@adminMasterLogin');
         $this->router->post('/api/auth/refresh', 'AuthController@refresh');
         $this->router->post('/api/auth/logout', 'AuthController@logout');
         $this->router->get('/api/me', 'AuthController@me');
@@ -122,7 +124,7 @@ class Application
 
         // --- Dashboard & Management ---
         $this->router->get('/dashboard', 'DashboardController@index', ['auth']);
-        
+
         // Block Management
         $this->router->get('/api/pages/{pageId}', 'EditorController@getPage', ['auth', 'page_admin']);
         $this->router->get('/api/pages/{pageId}/blocks/{blockId}', 'EditorController@getBlock', ['auth', 'page_admin']);
@@ -197,16 +199,16 @@ class Application
         ]);
 
         $isApi = str_starts_with($_SERVER['REQUEST_URI'] ?? '', '/api/');
-        
+            
         if ($isApi) {
-            http_response_code(500);
-            echo json_encode([
-                'ok' => false,
-                'error_code' => 'INTERNAL_ERROR',
+                http_response_code(500);
+                echo json_encode([
+                    'ok' => false,
+                    'error_code' => 'INTERNAL_ERROR',
                 'message_he' => 'שגיאה פנימית במערכת'
-            ], JSON_UNESCAPED_UNICODE);
-        } else {
-            http_response_code(500);
+                ], JSON_UNESCAPED_UNICODE);
+            } else {
+                http_response_code(500);
             echo "<h1>System Error</h1><p>" . htmlspecialchars($e->getMessage()) . "</p>";
         }
     }

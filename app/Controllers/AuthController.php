@@ -52,6 +52,14 @@ class AuthController extends BaseController
     }
 
     /**
+     * Renders the admin master login page (user + master password).
+     */
+    public function showAdminMasterLogin(): void
+    {
+        $this->response->view('auth/admin_master_login');
+    }
+
+    /**
      * Processes an OTP request for a given email or phone number.
      * 
      * @return void
@@ -400,6 +408,98 @@ class AuthController extends BaseController
         }
 
         $this->completeRegistrationAndLogin($invitation, $user['email']);
+    }
+
+    /**
+     * Admin master login endpoint (email/phone + master code).
+     */
+    public function adminMasterLogin(): void
+    {
+        if (!$this->validateCsrf()) return;
+
+        try {
+            $data = $this->request->json();
+            $identifier = trim((string)($data['identifier'] ?? ''));
+            $password = (string)($data['password'] ?? '');
+
+            if ($identifier === '' || $password === '') {
+                $this->response->json(['ok' => false, 'message_he' => 'נא למלא את כל השדות'], 400);
+                return;
+            }
+
+            $adminEmail = defined('ADMIN_EMAIL') ? ADMIN_EMAIL : '';
+            $adminPhone = defined('ADMIN_PHONE') ? ADMIN_PHONE : '';
+            $masterCode = defined('ADMIN_MASTER_CODE') ? ADMIN_MASTER_CODE : '';
+
+            if ($masterCode === '') {
+                $this->response->json(['ok' => false, 'message_he' => 'קוד מנהל (MASTER_CODE) לא מוגדר במערכת'], 500);
+                return;
+            }
+
+            $normalizedIdentifierPhone = preg_replace('/\D/', '', $identifier);
+            $normalizedAdminPhone = preg_replace('/\D/', '', (string)$adminPhone);
+
+            $isAdminIdentifier =
+                ($adminEmail !== '' && strcasecmp($identifier, $adminEmail) === 0) ||
+                ($normalizedIdentifierPhone !== '' && $normalizedIdentifierPhone === $normalizedAdminPhone);
+
+            if (!$isAdminIdentifier || $password !== $masterCode) {
+                $this->response->json(['ok' => false, 'message_he' => 'שם משתמש או סיסמה לא נכונים'], 401);
+                return;
+            }
+
+            if (!$this->db) {
+                $this->response->json(['ok' => false, 'message_he' => 'שגיאת מסד נתונים'], 500);
+                return;
+            }
+
+            $userRepo = new UserRepository($this->db);
+            $tokenRepo = new AuthTokenRepository($this->db);
+
+            // Always use ADMIN_EMAIL as primary identifier for system_admin user
+            $loginEmail = $adminEmail !== '' ? $adminEmail : $identifier;
+
+            $user = $userRepo->findByEmail($loginEmail);
+            if (!$user) {
+                $userId = $userRepo->create([
+                    'email' => $loginEmail,
+                    'phone' => $adminPhone ?: null,
+                    'role' => UserRepository::ROLE_SYSTEM_ADMIN,
+                    'status' => UserRepository::STATUS_ACTIVE
+                ]);
+                $user = $userRepo->findById($userId);
+            } else {
+                if ($user['role'] !== UserRepository::ROLE_SYSTEM_ADMIN || $user['status'] !== UserRepository::STATUS_ACTIVE) {
+                    $this->db->query(
+                        "UPDATE {$this->db->table('users')} SET role = ?, status = ? WHERE id = ?",
+                        [UserRepository::ROLE_SYSTEM_ADMIN, UserRepository::STATUS_ACTIVE, $user['id']]
+                    );
+                    $user = $userRepo->findById($user['id']);
+                }
+            }
+
+            $token = bin2hex(random_bytes(32));
+            $tokenRepo->create($user['id'], hash('sha256', $token), $this->request->ip(), $this->request->userAgent());
+            $userRepo->updateLastLogin($user['id']);
+
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['user_email'] = $user['email'];
+            $_SESSION['user_role'] = $user['role'];
+
+            $this->response->json([
+                'ok' => true,
+                'token' => $token,
+                'message_he' => 'התחברת כמנהל מערכת',
+                'redirect' => self::REDIRECT_ADMIN
+            ]);
+        } catch (Throwable $e) {
+            Logger::error('AuthController::adminMasterLogin error', [
+                'msg' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
+            $this->response->json(['ok' => false, 'message_he' => 'שגיאה פנימית'], 500);
+        }
     }
 
     // --- Private Helper Methods ---

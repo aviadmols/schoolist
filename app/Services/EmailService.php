@@ -157,14 +157,14 @@ class EmailService
             $this->sendMailCommands($socket, $to, $subject, $body);
             
             $this->sendCommand($socket, "QUIT");
-            fclose($socket);
+                fclose($socket);
             return true;
 
         } catch (Throwable $e) {
             $this->lastError = $e->getMessage();
             Logger::error("EmailService::SMTP: Exception", ['msg' => $e->getMessage()]);
-            return false;
-        }
+                    return false;
+                }
     }
 
     // --- Private Helper Methods for SMTP ---
@@ -178,8 +178,8 @@ class EmailService
             "{$host}:{$this->smtpPort}",
             $errno, $errstr, self::DEFAULT_TIMEOUT,
             STREAM_CLIENT_CONNECT, $context
-        );
-
+                );
+                
         if (!$socket) {
             throw new \Exception("Connection failed: $errstr ($errno)");
         }
@@ -202,7 +202,7 @@ class EmailService
             throw new \Exception("$context failed: " . trim($response));
         }
         return $response;
-    }
+            }
 
     private function startTls($socket): void
     {
@@ -248,5 +248,5 @@ class EmailService
 
         $this->sendCommand($socket, $msg);
         $this->readResponse($socket, '250', "Message delivery");
-    }
+            }
 }

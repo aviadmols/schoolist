@@ -29,6 +29,32 @@ class SmsService
     public function __construct()
     {
         $this->token = defined('SMS_019_TOKEN') ? SMS_019_TOKEN : '';
+        
+        // Log the actual values being used (masked for security)
+        // This helps debug if wrong values are being used from admin panel vs config file
+        $source = defined('SMS_SOURCE') ? SMS_SOURCE : 'NOT_DEFINED';
+        $username = defined('SMS_USERNAME') ? SMS_USERNAME : 'NOT_DEFINED';
+        $tokenPreview = $this->token ? (substr($this->token, 0, 20) . '...') : 'EMPTY';
+        
+        Logger::info("SmsService::__construct: Initialized with config", [
+            'token_defined' => defined('SMS_019_TOKEN'),
+            'token_preview' => $tokenPreview,
+            'token_expected_start' => 'eyJ0eXAiOiJqd3QiLCJhbGciOiJIUzI1NiJ9', // First part of your token
+            'token_matches_expected' => $this->token && str_starts_with($this->token, 'eyJ0eXAiOiJqd3QiLCJhbGciOiJIUzI1NiJ9'),
+            'source_defined' => defined('SMS_SOURCE'),
+            'source_value' => $source,
+            'source_expected' => '0503222012',
+            'source_matches_expected' => $source === '0503222012',
+            'username_defined' => defined('SMS_USERNAME'),
+            'username_value' => $username,
+            'username_expected' => 'Aviadmols',
+            'username_matches_expected' => $username === 'Aviadmols',
+            'config_local_exists' => file_exists(ROOT_PATH . '/config/config.local.php'),
+            'config_prod_exists' => file_exists(ROOT_PATH . '/config/config.php')
+        ]);
+        
+        // Also log to error_log for immediate visibility
+        error_log("SmsService INIT: Token=" . $tokenPreview . ", Source=" . $source . ", Username=" . $username);
     }
 
     /**
